@@ -32,6 +32,19 @@ namespace Datos
 
             return medicos;
         }
+
+        public static DataTable ListarOffline()
+        {
+            string query = "SELECT Id,Nombre,Apellido,NroMatricula,EspecialidadId FROM dbo.Medico";
+
+            SqlDataAdapter adapter = new SqlDataAdapter(query, AdminDB.ConectarBD());
+
+            DataSet ds = new DataSet();
+
+            adapter.Fill(ds, "Medicos");
+
+            return ds.Tables["Medicos"];
+        }
         
         public static DataTable Listar(int EspecialidadID)
         {
@@ -76,6 +89,38 @@ namespace Datos
 
             int filasAfectadas = command.ExecuteNonQuery();
 
+            return filasAfectadas;
+        }
+
+        public static int Eliminar(int Id)
+        {
+            string query = "DELETE FROM dbo.Medico WHERE Id = @Id";
+
+            SqlCommand command = new SqlCommand(query, AdminDB.ConectarBD());
+
+            command.Parameters.Add("@Id", SqlDbType.Int).Value = Id;
+
+            int filasAfectadas = command.ExecuteNonQuery();
+
+            AdminDB.ConectarBD().Close();
+
+            return filasAfectadas;
+        }
+
+        public static int Modificar(Medico medico)
+        {
+            string query = "UPDATE dbo.Medico SET Nombre=@Nombre,Apellido=@Apellido,NroMatricula=@NroMatricula,EspecialidadId=@EspecialidadId WHERE Id=@Id";
+
+            SqlCommand command = new SqlCommand(query, AdminDB.ConectarBD());
+
+            command.Parameters.Add("@Nombre", SqlDbType.VarChar, 50).Value = medico.Nombre;
+            command.Parameters.Add("@Apellido", SqlDbType.VarChar, 50).Value = medico.Apellido;
+            command.Parameters.Add("@NroMatricula", SqlDbType.Int).Value = medico.NroMatricula;
+            command.Parameters.Add("@EspecialidadId", SqlDbType.Int).Value = medico.EspecialidadId;
+            command.Parameters.Add("@Id", SqlDbType.Int).Value = medico.Id;
+
+            int filasAfectadas = command.ExecuteNonQuery();
+            AdminDB.ConectarBD().Close();
             return filasAfectadas;
         }
 
